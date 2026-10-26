@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sistema Principal</title>
+</head>
+<body>
+    <h1>Verificación de Acceso con API</h1>
+    
+    <h2>Usuarios registrados:</h2>
+    <ul>
+        {% for usuario in usuarios %}
+            <li>
+                <strong>{{ usuario.username }}</strong> (Email: {{ usuario.email }})
+                <br>
+                Permisos habilitados (IDs): {{ usuario.permisos }}
+            </li>
+        {% empty %}
+            <li>No hay usuarios disponibles o la API está desconectada.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
