@@ -2,31 +2,62 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Menú Principal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú Principal - Sistema de Usuarios</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f4f6f9; color: #333; min-height: 100vh; }
+        header { background: #1e3a8a; color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        header h1 { font-size: 1.25rem; font-weight: 600; }
+        .btn-logout { color: #f1f5f9; text-decoration: none; font-size: 0.875rem; background: rgba(255,255,255,0.15); padding: 0.4rem 0.8rem; border-radius: 4px; transition: background 0.2s; }
+        .btn-logout:hover { background: rgba(255,255,255,0.25); }
+        .container { max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+        .card { background: white; border-radius: 8px; padding: 1.75rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; }
+        .card h2 { font-size: 1.15rem; color: #1e293b; margin-bottom: 1.25rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.5rem; }
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; list-style: none; }
+        .menu-item { background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #2563eb; padding: 1rem; border-radius: 6px; }
+        .menu-item strong { display: block; color: #0f172a; margin-bottom: 0.25rem; font-size: 0.95rem; }
+        .menu-item span { color: #64748b; font-size: 0.85rem; }
+        .no-permissions { color: #64748b; font-size: 0.9rem; font-style: italic; }
+    </style>
 </head>
 <body>
-    <h1>Bienvenido, {{ usuario }}</h1>
-    <p><a href="{% url 'logout' %}">Cerrar Sesión</a></p>
+    <header>
+        <h1>Bienvenido, {{ usuario }}</h1>
+        <a href="{% url 'logout' %}" class="btn-logout">Cerrar Sesión</a>
+    </header>
 
-    <hr>
+    <div class="container">
+        <div class="card">
+            <h2>Módulos Disponibles</h2>
+            
+            {% if permisos %}
+                <ul class="menu-grid">
+                    {% if 'VER_MENU' in permisos %}
+                        <li class="menu-item">
+                            <strong>Menú Principal</strong>
+                            <span>Acceso general al panel de control.</span>
+                        </li>
+                    {% endif %}
 
-    <h2>Opciones del Sistema:</h2>
-    <ul>
-        {% if 'VER_MENU' in permisos %}
-            <li><strong>Opción General:</strong> Vista del Menú Principal habilitada.</li>
-        {% endif %}
+                    {% if 'ADMIN_USUARIOS' in permisos %}
+                        <li class="menu-item" style="border-left-color: #059669;">
+                            <strong>Gestión de Usuarios</strong>
+                            <span>Administración avanzada de cuentas.</span>
+                        </li>
+                    {% endif %}
 
-        {% if 'ADMIN_USUARIOS' in permisos %}
-            <li><strong>Módulo Avanzado:</strong> Gestión de usuarios.</li>
-        {% endif %}
-
-        {% if 'VER_REPORTES' in permisos %}
-            <li><strong>Reportes:</strong> Generación de informes del sistema.</li>
-        {% endif %}
-    </ul>
-
-    {% if not permisos %}
-        <p>No tienes permisos asignados para ver opciones en este sistema.</p>
-    {% endif %}
+                    {% if 'VER_REPORTES' in permisos %}
+                        <li class="menu-item" style="border-left-color: #d97706;">
+                            <strong>Módulo de Reportes</strong>
+                            <span>Generación e historial de informes.</span>
+                        </li>
+                    {% endif %}
+                </ul>
+            {% else %}
+                <p class="no-permissions">No cuenta con permisos asignados para este sistema.</p>
+            {% endif %}
+        </div>
+    </div>
 </body>
 </html>
