@@ -7,5 +7,7 @@ router.register(r'usuarios', views.UsuarioViewSet)
 router.register(r'permisos', views.PermisoViewSet)
 
 urlpatterns = [
-    path('', include(router.urls))
+    path('', include(router.urls)),
+    # Nueva ruta para el endpoint de autenticación
+    path('autentificar/', views.AutentificarView.as_view(), name='autentificar'),
 ]
