@@ -1,13 +1,16 @@
-from django.urls import path, include
-from rest_framework import routers
+from django.urls import path
 from . import views
 
-router = routers.DefaultRouter()
-router.register(r'usuarios', views.UsuarioViewSet)
-router.register(r'permisos', views.PermisoViewSet)
-
 urlpatterns = [
-    path('', include(router.urls)),
-    # Nueva ruta para el endpoint de autenticación
-    path('autentificar/', views.AutentificarView.as_view(), name='autentificar'),
+    # Autenticación de usuarios
+    path('autentificar/', views.autentificar, name='autentificar'),
+    
+    # Gestión de usuarios
+    path('agregarusuario/', views.agregar_usuario, name='agregar_usuario'),
+    path('agregarusuario', views.agregar_usuario),  # Alternativa sin slash por compatibilidad
+    path('actualizar/', views.actualizar_usuario, name='actualizar_usuario'),
+    
+    # Gestión de permisos
+    path('addpermiso/', views.agregar_permiso, name='agregar_permiso'),
+    path('asociapermiso/', views.asociar_permiso, name='asociar_permiso'),
 ]
