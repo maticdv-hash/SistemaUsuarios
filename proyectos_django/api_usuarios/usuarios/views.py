@@ -3,6 +3,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.models import User, Permission
 from django.contrib.auth import authenticate
+from django.contrib.contenttypes.models import ContentType
+
 
 @api_view(['POST'])
 def autentificar(request):
@@ -15,7 +17,7 @@ def autentificar(request):
     user = authenticate(username=username, password=password)
     
     if user is not None:
-        # Obtener los códigos (codename) de todos los permisos del usuario
+        # Obtener los códigos (codename) de todos los permisos asignados al usuario
         permisos = list(user.user_permissions.values_list('codename', flat=True))
         return Response({
             "valido": True,
@@ -32,15 +34,18 @@ def autentificar(request):
 @api_view(['GET', 'POST'])
 def agregar_usuario(request):
     """
-    Crea un nuevo usuario en la base de datos de la API.
-     Permite GET para visualización en el navegador DRF.
+    GET: Retorna el registro de todos los usuarios creados en la base de datos.
+    POST: Crea un nuevo usuario en la API.
     """
     if request.method == 'GET':
+        # Consulta los usuarios guardados en la BD
+        usuarios = User.objects.all().values('id', 'username', 'email', 'date_joined')
         return Response({
-            "mensaje": "Utilice POST para registrar un nuevo usuario.",
-            "campos_requeridos": ["username", "password", "email"]
+            "total_usuarios": usuarios.count(),
+            "registro_usuarios": list(usuarios)
         }, status=status.HTTP_200_OK)
 
+    # Lógica POST para guardar un usuario
     username = request.data.get('username')
     password = request.data.get('password')
     email = request.data.get('email', '')
@@ -60,7 +65,7 @@ def agregar_usuario(request):
         "mensaje": "Usuario creado exitosamente",
         "id": user.id,
         "username": user.username
-    }, status=status.HTTP_211_CREATED if hasattr(status, 'HTTP_211_CREATED') else status.HTTP_201_CREATED)
+    }, status=status.HTTP_201_CREATED)
 
 
 @api_view(['POST'])
@@ -90,7 +95,10 @@ def agregar_permiso(request):
     Crea un permiso personalizado en el sistema.
     """
     if request.method == 'GET':
-        return Response({"mensaje": "Envíe 'codename' y 'name' mediante POST para registrar un permiso."})
+        return Response({
+            "mensaje": "Envíe 'codename' y 'name' mediante POST para registrar un permiso.",
+            "permisos_disponibles_plantilla": ["VER_MENU", "ADMIN_USUARIOS", "VER_REPORTES"]
+        }, status=status.HTTP_200_OK)
 
     codename = request.data.get('codename')
     name = request.data.get('name')
@@ -98,7 +106,6 @@ def agregar_permiso(request):
     if not codename or not name:
         return Response({"error": "Faltan parámetros 'codename' y 'name'"}, status=status.HTTP_400_BAD_REQUEST)
 
-    from django.contrib.contenttypes.models import ContentType
     content_type = ContentType.objects.get_for_model(User)
     
     permiso, created = Permission.objects.get_or_create(
