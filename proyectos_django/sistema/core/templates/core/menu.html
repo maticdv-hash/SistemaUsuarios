@@ -1,22 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Sistema Principal</title>
+    <meta charset="UTF-8">
+    <title>Menú Principal</title>
 </head>
 <body>
-    <h1>Verificación de Acceso con API</h1>
-    
-    <h2>Usuarios registrados:</h2>
+    <h1>Bienvenido, {{ usuario }}</h1>
+    <p><a href="{% url 'logout' %}">Cerrar Sesión</a></p>
+
+    <hr>
+
+    <h2>Opciones del Sistema:</h2>
     <ul>
-        {% for usuario in usuarios %}
-            <li>
-                <strong>{{ usuario.username }}</strong> (Email: {{ usuario.email }})
-                <br>
-                Permisos habilitados (IDs): {{ usuario.permisos }}
-            </li>
-        {% empty %}
-            <li>No hay usuarios disponibles o la API está desconectada.</li>
-        {% endfor %}
+        {% if 'VER_MENU' in permisos %}
+            <li><strong>Opción General:</strong> Vista del Menú Principal habilitada.</li>
+        {% endif %}
+
+        {% if 'ADMIN_USUARIOS' in permisos %}
+            <li><strong>Módulo Avanzado:</strong> Gestión de usuarios.</li>
+        {% endif %}
+
+        {% if 'VER_REPORTES' in permisos %}
+            <li><strong>Reportes:</strong> Generación de informes del sistema.</li>
+        {% endif %}
     </ul>
+
+    {% if not permisos %}
+        <p>No tienes permisos asignados para ver opciones en este sistema.</p>
+    {% endif %}
 </body>
 </html>
